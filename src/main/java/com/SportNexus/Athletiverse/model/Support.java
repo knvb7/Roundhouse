@@ -31,6 +31,9 @@ public class Support {
     @Column(name = "amount", nullable = false)
     private Double amount;
 
+    @Column(name = "currency", nullable = false)
+    private String currency;
+
     @Column(name = "platform_fee", nullable = false)
     private Double platformFee;
 
@@ -56,6 +59,9 @@ public class Support {
         updatedAt = createdAt;
         if (status == null) {
             status = SupportStatus.PENDING;
+        }
+        if (currency == null) {
+            currency = "INR";
         }
     }
 

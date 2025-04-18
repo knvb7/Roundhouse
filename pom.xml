@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.SportNexus</groupId>
-	<artifactId>Athletiverse</artifactId>
+	<artifactId>RoundHouse</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Athletiverse</name>
 	<description>Athletiverse – The Ultimate Business &amp; Networking Platform for Athletes, Fans, and Sponsors!</description>

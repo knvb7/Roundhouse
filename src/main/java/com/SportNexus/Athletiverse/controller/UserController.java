@@ -1,44 +1,48 @@
 package com.SportNexus.Athletiverse.controller;
 
-import com.SportNexus.Athletiverse.dto.UserProfileResponse;
-import com.SportNexus.Athletiverse.dto.UserRegistrationRequest;
-import com.SportNexus.Athletiverse.dto.UserUpdateRequest;
-import com.SportNexus.Athletiverse.model.User;
+import com.SportNexus.Athletiverse.api.request.ChangePasswordRequest;
+import com.SportNexus.Athletiverse.api.request.UserUpdateRequest;
+import com.SportNexus.Athletiverse.api.response.UserProfileResponse;
+import com.SportNexus.Athletiverse.api.request.UserRegistrationRequest;
+import com.SportNexus.Athletiverse.exception.AthletiverseException;
+import com.SportNexus.Athletiverse.security.UserPrincipal;
 import com.SportNexus.Athletiverse.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class UserController {
-    
+
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserProfileResponse> registerUser(@Valid @RequestBody UserRegistrationRequest request) {
+    public ResponseEntity<UserProfileResponse> registerUser(@Valid @RequestBody UserRegistrationRequest request) throws AthletiverseException {
         return ResponseEntity.ok(userService.registerUser(request));
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserProfileResponse> getUserProfile(@PathVariable Long userId) {
+    public ResponseEntity<UserProfileResponse> getUserProfile(@PathVariable Long userId) throws AthletiverseException {
         return ResponseEntity.ok(userService.getUserProfile(userId));
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<UserProfileResponse> getUserByUsername(@PathVariable String username) {
+    public ResponseEntity<UserProfileResponse> getUserByUsername(@PathVariable String username) throws AthletiverseException {
         return ResponseEntity.ok(userService.getUserByUsername(username));
     }
 
     @PutMapping("/{userId}")
     public ResponseEntity<UserProfileResponse> updateUser(
             @PathVariable Long userId,
-            @Valid @RequestBody UserUpdateRequest request) {
+            @Valid @RequestBody UserUpdateRequest request) throws AthletiverseException {
         return ResponseEntity.ok(userService.updateUser(userId, request));
     }
 
@@ -88,5 +92,12 @@ public class UserController {
             @RequestParam Double amount) {
         userService.processDonation(userId, targetUserId, amount);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/me/password")
+    public ResponseEntity<Map<String, String>> changePassword(@Valid @RequestBody ChangePasswordRequest request, Authentication authentication) throws AthletiverseException {
+        Long userId = ((UserPrincipal) authentication.getPrincipal()).getId();
+        userService.changePassword(userId, request.getOldPassword(), request.getNewPassword());
+        return ResponseEntity.ok(Map.of("message", "Password updated successfully"));
     }
 }
